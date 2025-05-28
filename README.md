@@ -65,8 +65,8 @@
 
 ## 주요 링크
 
-1. S3 버킷 웹사이트 엔드포인트: http://optimization-4.s3-website.us-east-2.amazonaws.com/
-2. CloudFront 배포 도메인 이름: https://d31xxle60t1onn.cloudfront.net
+1. S3 버킷 웹사이트 엔드포인트: <a href="http://optimization-4.s3-website.us-east-2.amazonaws.com/" target="_blank">http://optimization-4.s3-website.us-east-2.amazonaws.com/</a>
+2. CloudFront 배포 도메인 이름: <a href="https://d31xxle60t1onn.cloudfront.net" target="_blank">https://d31xxle60t1onn.cloudfront.net</a>
 
 ## 주요 개념
 
