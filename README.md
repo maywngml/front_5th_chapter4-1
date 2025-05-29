@@ -1,4 +1,4 @@
-# 프론트엔드 배포 파이프라인
+## 프론트엔드 배포 파이프라인
 
 ![alt text](image.png)
 
@@ -94,3 +94,63 @@
    - Github의 Repository secret은 외부에 노출되면 안 되는 민감한 값을 저장하기 위한 비밀 환경 변수입니다.
    - AWS 액세스 키, API 토큰과 같이 보안이 필요한 값들을 저장할 때 사용합니다.
    - Github Actions 워크플로우에서는 ${{ secrets.변수명 }} 형식으로 값을 참조할 수 있습니다.
+
+## CDN과 성능최적화
+
+### CDN이란?
+
+- 전 세계 여러 지역에 분산된 엣지 서버(Edge Server)를 통해 사용자와 가장 가까운 서버에서 콘텐츠를 제공하는 방식  
+  → 해당 프로젝트에서는 AWS CloudFront를 통해 정적 웹사이트를 CDN에 배포했습니다.
+
+### 성능최적화 방법
+
+- Amazon S3로 정적 파일을 호스팅 → CloudFront를 통해 S3의 정적 리소스를 CDN으로 배포
+
+### 네트워크 성능 비교 (Chrome 네트워크 탭 기준)
+
+![alt text](image-1.png)
+
+1.  비교 결과  
+     |지표|감소율|
+    |-----|---|
+    |Finish|89.79%|
+    |DOMContentLoaded|86.11%|
+    |Load|90%|
+    |Transferred|54.34%|
+2.  지표 설명
+    - **Finish**: HTML, CSS, JS 같은 모든 리소스가 다운로드되고, 추가 비동기 작업까지 모두 완료되는데 걸린 시간
+    - **DOMContentLoaded**: 초기 HTML 문서가 완전히 다운로드되고 DOM 트리로 파싱되기까지의 시간 (이미지, CSS, JS 등 외부 리소스는 기다리지 않음)
+    - **Load**: HTML과 CSS, JS와 같은 모든 리소스가 다운로드되고 파싱 완료되기까지의 시간
+    - **Transferred**: 브라우저로 실제 전송된 데이터의 총합
+
+### 성능 지표 비교 (Chrome Lighthouse 기준)
+
+![alt text](image-5.png)
+
+1. 비교 결과
+   |지표|감소율|
+   |-----|---|
+   |First Contentful Paint|27.27%|
+   |Largest Contentful Paint|62.5%|
+   |Total Blocking Time|33.33%|
+   |Cumulative Layout Shift|0%|
+   |Speed Index|73.33%|
+2. 지표 설명
+   - **First Contentful Paint**: 브라우저가 최초로 텍스트, 이미지 등 DOM 콘텐츠를 화면에 렌더링하는데 걸린 시간
+   - **Largest Contentful Paint**: 가장 큰 콘텐츠를 렌더링하는데 걸린 시간
+   - **Total Blocking Time**: 마우스 클릭 등 사용자 입력에 응답하지 못한 시간의 총합
+   - **Cumulative Layout Shift**: 로딩 중 발생한 예상치 못한 레이아웃 이동에 대한 점수
+   - **Speed Index**: 콘텐츠가 시각적으로 얼마나 빠르게 표시되는지를 수치화
+
+### 성능 비교 결과 요약
+
+CloudFront CDN 적용 후 전체 페이지 로딩 성능이 전반적으로 크게 향상
+
+1. 네트워크 지표 평균적으로 약 80% 이상 개선, 전송 데이터양도 절반 이하로 감소
+2. 주요 성능 지표도 최대 70% 이상 개선, 사용자 체감 성능 크게 향상
+
+### CDN 적용 효과
+
+1. **지연 시간 감소**: 사용자와 가장 가까운 엣지 서버에서 응답하기 때문에 초기 로딩 속도 향상
+2. **네트워크 최적화**: 전송 데이터양 감소 및 캐싱을 통한 대역폭 절감
+3. **사용자 경험 개선**: FCP, LCP, CLS 등 Core Web Vitals 지표 개선
